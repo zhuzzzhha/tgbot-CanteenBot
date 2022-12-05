@@ -46,3 +46,5 @@ mkdir C:\install\boost_1_68_0\boost-build
 mkdir C:\boost
 ```
 Подробнее об установке boost: [здесь](https://gist.github.com/zrsmithson/0b72e0cb58d0cb946fc48b5c88511da8)
+### Установка Sqlite
+1) Выбираем [нужну версию](https://sqlite.org/download.html), скачиваем и устанавливаем
