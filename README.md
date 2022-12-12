@@ -1,4 +1,4 @@
-# course_work
+# CanteenBot
 ## Сборка проекта
 ### Установка boost
 1) Скачиваем [MinGW installer mingw-w64-install.exe from Sourceforge](https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/installer/)
