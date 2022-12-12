@@ -36,4 +36,4 @@ mkdir C:\boost
 ```
 > .\vcpkg\vcpkg install tgbot-cpp
 ```
-Для установки используте [CMakeLists] (https://github.com/zhuzzzhha/course_work/blob/main/CMakeLists.txt)
+Для установки используте [CMakeLists](https://github.com/zhuzzzhha/course_work/blob/main/CMakeLists.txt)
