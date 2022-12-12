@@ -28,12 +28,12 @@ mkdir C:\boost
 1) > git clone https://github.com/microsoft/vcpkg
 > .\vcpkg\bootstrap-vcpkg.bat
 ```
-Для установки на Windows x64:
+Для Windows x64:
 ```
 > .\vcpkg\vcpkg install tgbot-cpp:x64-windows
 ```
-Для установки на Windows x86
+Для Windows x86
 ```
 > .\vcpkg\vcpkg install tgbot-cpp
 ```
-Для установки используте CMakeLists
+Для установки используте [CMakeLists] ()
