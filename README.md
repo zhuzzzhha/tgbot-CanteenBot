@@ -38,6 +38,7 @@ mkdir C:\boost
 ```
 Для установки используте [CMakeLists](https://github.com/zhuzzzhha/course_work/blob/main/CMakeLists.txt)
 с некоторыми изменениями:
+замените на пути, в которых находятся установленные библиотеки
 ```
 "C:/local/boost_1_80_0"
 ```
