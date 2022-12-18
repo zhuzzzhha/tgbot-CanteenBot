@@ -78,8 +78,8 @@ int rc;
 string sql;
 int main() {
 
-
-	TgBot::Bot bot("5499577758:AAEomE4kaYJlRSnu53F6c3kGCks2A5C8hYQ");
+	std::string token = "";
+	TgBot::Bot bot(token);
 
 	rc = sqlite3_open("test.db", &db);
 
