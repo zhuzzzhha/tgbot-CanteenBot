@@ -1,6 +1,6 @@
 # CanteenBot
 
-###Установим необходимые зависимости
+### Установим необходимые зависимости
 ### Установка boost
 1) Скачиваем [MinGW installer mingw-w64-install.exe from Sourceforge](https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/installer/)
 2) Скачиваем [boost_1_80_0.zip source from Sourceforge](https://sourceforge.net/projects/boost/files/boost/1.80.0/)
@@ -25,3 +25,4 @@ mkdir C:\boost
 
 ## Сборка проекта
 Для сборки используйте CMake версии не ниже 3.14 и [CMakeLists](https://github.com/zhuzzzhha/course_work/blob/main/CMakeLists.txt)
+В целях безопасности token бота зашифрован. Вставьте значения токена из инструкции.
