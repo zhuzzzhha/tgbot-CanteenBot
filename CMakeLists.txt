@@ -13,7 +13,7 @@ set(Boost_USE_MULTITHREADED ON)
 find_package(Boost 1.80.0 REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(CURL)
-find_package(SQLITE3)
+find_package(SQlite3 REQUIRED )
 
 
 
@@ -27,6 +27,10 @@ if(NOT tgbot-cpp_POPULATED)
 FetchContent_Populate(tgbot-cpp)
 FetchContent_MakeAvailable(tgbot-cpp)
 
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/test.db
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
 add_subdirectory(${tgbot-cpp_SOURCE_DIR} ${tgbot-cpp_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
 
@@ -38,8 +42,6 @@ if (CURL_FOUND)
     include_directories(${CURL_INCLUDE_DIRS})
     add_definitions(-DHAVE_CURL)
 endif()
-
-find_package (SQLite3 REQUIRED)
 
 
 add_executable(course_test src/source.cpp)
