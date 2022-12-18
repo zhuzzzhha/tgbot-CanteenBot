@@ -22,4 +22,4 @@ mkdir C:\boost
 ### Установка Sqlite
 1) Выбираем [нужну версию](https://sqlite.org/download.html), скачиваем и устанавливаем
 
-Для установки используте [CMakeLists](https://github.com/zhuzzzhha/course_work/blob/main/CMakeLists.txt)
+Для установки используйте [CMakeLists](https://github.com/zhuzzzhha/course_work/blob/main/CMakeLists.txt)
