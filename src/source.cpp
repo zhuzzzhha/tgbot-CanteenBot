@@ -7,7 +7,7 @@
 #include <vector>
 #include<regex>
 #include <boost/system/system_error.hpp>
-#include "sqlite/sqlite3.h"
+#include "sqlite3.h"
 #include <tgbot/tgbot.h>
 #include <map>
 #define SQLITE_UTF16
