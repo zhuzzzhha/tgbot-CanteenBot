@@ -23,7 +23,7 @@ mkdir C:\boost
 ### Установка Sqlite
 1) Выбираем [нужну версию](https://sqlite.org/download.html), скачиваем и устанавливаем
 
-##Установка tgbot-cpp
+## Установка tgbot-cpp
 Устанвока tgbot-cpp осуществляется посредством FetchContent Cmake
 
 ## Сборка проекта
