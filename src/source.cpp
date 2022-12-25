@@ -10,28 +10,50 @@
 #include "sqlite3.h"
 #include <tgbot/tgbot.h>
 #include <map>
-#define SQLITE_UTF16
-using namespace std;
 using namespace TgBot;
-string output = "";
-vector<string> adm_keyboard_B;
-vector<string> adm_keyboard_G;
+/**
+* @mainpage Описание
+* Телеграм-бот для просмотра актуального меню столовых.<br /> Бот включает в себя:<br />
+* • Отдельный интерфейс для студента (просмотр меню каждой столовой);<br />
+* • Отдельный интерфейс для администратора (обновление текущего меню с возможностью выбора из имеющихся блюд, добавление нового блюда);<br />
+* • Вход в роли администратора по паролю;<br />
+*/
+/**
+* Переменная, в которой формируется ответ пользователю
+*/
+std::string output = "";
+std::vector<std::string> adm_keyboard_B;
+std::vector<std::string> adm_keyboard_G;
+/**
+* @brief Результат выполнения SQL-запроса, выводит в консоль "Success" в случае успешного выполнения
+* @param [in] argc Количество передаваемых параметров
+* @param [in] argv Массив указателей на передаваемые в качестве параметра строки
+* @param [in] azColName Массив указателей на названия столбцов
+* @return 0
+*/
 int callback(void* NotUsed, int argc, char** argv, char** azColName) {
 
 
 	for (int i = 0; i < argc; i++) {
 
 		output = output + azColName[i] + ": " + argv[i] + '\n';
-		cout << azColName[i] << ": " << argv[i] << '\n';
+		std::cout << azColName[i] << ": " << argv[i] << '\n';
 	}
 	output += '\n';
-	cout << "Success!" << endl;
+	std::cout << "Success!" << std::endl;
 	return 0;
 }
+/*!
+* @brief Обновление наполнения клавиатуры для выбора блюд
+* @param [in] argc Количество передаваемых параметров
+* @param [in] argv Массив указателей на передаваемые в качестве параметра строки
+* @param [in] azColName Массив указателей на названия столбцов
+* @return 0
+*/
 int Bkeyboard_sql(void* NotUsed, int argc, char** argv, char** azColName) {
 
 	for (int i = 0; i < argc; i++) {
-		string s = "b_";
+		std::string s = "b_";
 		s += argv[i];
 
 		adm_keyboard_B.push_back(s);
@@ -39,10 +61,11 @@ int Bkeyboard_sql(void* NotUsed, int argc, char** argv, char** azColName) {
 
 	return 0;
 }
+
 int Gkeyboard_sql(void* NotUsed, int argc, char** argv, char** azColName) {
 
 	for (int i = 0; i < argc; i++) {
-		string s = "g_";
+		std::string s = "g_";
 		s += argv[i];
 
 		adm_keyboard_G.push_back(s);
@@ -50,20 +73,30 @@ int Gkeyboard_sql(void* NotUsed, int argc, char** argv, char** azColName) {
 
 	return 0;
 }
+/**
+* @brief Функция создания клавиатуры с одним столбцом кнопок
+* @param [in] buttonStrings Массив, содержащий названия кнопок
+* @param [in] kb Указатель на клавиатуру
+*/
 void createOneColumnKeyboard(const std::vector<std::string>& buttonStrings, ReplyKeyboardMarkup::Ptr& kb)
 {
 	for (size_t i = 0; i < buttonStrings.size(); ++i) {
-		vector<::KeyboardButton::Ptr> row;
+		std::vector<::KeyboardButton::Ptr> row;
 		KeyboardButton::Ptr button(new KeyboardButton);
 		button->text = buttonStrings[i];
 		row.push_back(button);
 		kb->keyboard.push_back(row);
 	}
 }
-void createKeyboard(const vector<std::vector<string>>& buttonLayout, ReplyKeyboardMarkup::Ptr& kb)
+/**
+* @brief Функция создания клавиатуры
+* @param [in] buttonLayout Двумерный массив, содержащий названия кнопок
+* @param [in] kb Указатель на клавиатуру
+*/
+void createKeyboard(const std::vector<std::vector<std::string>>& buttonLayout, ReplyKeyboardMarkup::Ptr& kb)
 {
 	for (size_t i = 0; i < buttonLayout.size(); ++i) {
-		vector<KeyboardButton::Ptr> row;
+		std::vector<KeyboardButton::Ptr> row;
 		for (size_t j = 0; j < buttonLayout[i].size(); ++j) {
 			KeyboardButton::Ptr button(new KeyboardButton);
 			button->text = buttonLayout[i][j];
@@ -72,10 +105,16 @@ void createKeyboard(const vector<std::vector<string>>& buttonLayout, ReplyKeyboa
 		kb->keyboard.push_back(row);
 	}
 }
+/**
+Хэндл объекта  - соединение к БД
+*/
 sqlite3* db;
 char* zErrMsg = 0;
 int rc;
-string sql;
+/**
+Строка для SQL-запроса
+*/
+std::string sql;
 int main() {
 
 	std::string token = "";
@@ -85,7 +124,7 @@ int main() {
 
 	//стартовая клавиатура для выбора роли
 	InlineKeyboardMarkup::Ptr startkeyboard(new InlineKeyboardMarkup);
-	vector<InlineKeyboardButton::Ptr> startrow0;
+	std::vector<InlineKeyboardButton::Ptr> startrow0;
 	InlineKeyboardButton::Ptr studButton(new InlineKeyboardButton);
 	studButton->text = "Студент";
 	studButton->callbackData = "Студент";
@@ -100,8 +139,8 @@ int main() {
 	//клавиатура администратора
 	InlineKeyboardMarkup::Ptr adminkeyboardB(new InlineKeyboardMarkup);
 	InlineKeyboardMarkup::Ptr adminkeyboardG(new InlineKeyboardMarkup);
-	vector<InlineKeyboardButton::Ptr> adrowB0;
-	vector<InlineKeyboardButton::Ptr> adrowG0;
+	std::vector<InlineKeyboardButton::Ptr> adrowB0;
+	std::vector<InlineKeyboardButton::Ptr> adrowG0;
 	InlineKeyboardButton::Ptr newDishB(new InlineKeyboardButton);
 	InlineKeyboardButton::Ptr newDishG(new InlineKeyboardButton);
 	newDishB->text = "Добавить новое блюдо";
@@ -134,7 +173,7 @@ int main() {
 
 	//клавиатура студента
 	InlineKeyboardMarkup::Ptr studentkeyboard(new InlineKeyboardMarkup);
-	vector<InlineKeyboardButton::Ptr> studrow0;
+	std::vector<InlineKeyboardButton::Ptr> studrow0;
 	InlineKeyboardButton::Ptr CanteenB(new InlineKeyboardButton);
 	CanteenB->text = "Столовая Б";
 	CanteenB->callbackData = "Canteen B";
@@ -149,12 +188,12 @@ int main() {
 	//клавиатура выбора блюда CanteenB, CanteenG
 	InlineKeyboardMarkup::Ptr dishkeyboardB(new InlineKeyboardMarkup);
 	InlineKeyboardMarkup::Ptr dishkeyboardG(new InlineKeyboardMarkup);
-	vector<vector<string>> names{ {"Завтрак","Суп"},
+	std::vector<std::vector<std::string>> names{ {"Завтрак","Суп"},
 		{"Гарнир","Горячее"},
 		{"Салат","Напитки"},
 		{"Дессерты","Комплексный обед" } };
-	vector<vector<InlineKeyboardButton::Ptr>> dishrowB(4);
-	vector<vector<InlineKeyboardButton::Ptr>> dishrowG(4);
+	std::vector<std::vector<InlineKeyboardButton::Ptr>> dishrowB(4);
+	std::vector<std::vector<InlineKeyboardButton::Ptr>> dishrowG(4);
 	for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < 2; j++)
@@ -181,14 +220,14 @@ int main() {
 	rc = sqlite3_exec(db, sql.c_str(), Bkeyboard_sql, 0, &zErrMsg);
 	sql = "SELECT Название FROM 'CANTEENG' WHERE Наличие = 0;";
 	rc = sqlite3_exec(db, sql.c_str(), Gkeyboard_sql, 0, &zErrMsg);
-	vector<InlineKeyboardButton::Ptr> row_adm_B(1);
-	vector<InlineKeyboardButton::Ptr> row_adm_G(1);
+	std::vector<InlineKeyboardButton::Ptr> row_adm_B(1);
+	std::vector<InlineKeyboardButton::Ptr> row_adm_G(1);
 	for (int i = 0; i < adm_keyboard_B.size(); i++)
 	{
 
 		InlineKeyboardButton::Ptr button_adm_B (new InlineKeyboardButton);
 
-		string s = adm_keyboard_B[i];
+		std::string s = adm_keyboard_B[i];
 		std::regex regex1("_");
 		std::vector<std::string> out(
 			std::sregex_token_iterator(s.begin(), s.end(), regex1, -1),
@@ -205,7 +244,7 @@ int main() {
 
 		InlineKeyboardButton::Ptr button_adm_G(new InlineKeyboardButton);
 
-		string s = adm_keyboard_G[i];
+		std::string s = adm_keyboard_G[i];
 		std::regex regex1("_");
 		std::vector<std::string> out(
 			std::sregex_token_iterator(s.begin(), s.end(), regex1, -1),
@@ -220,11 +259,11 @@ int main() {
 
 	// клавиатура выбора типа добавления блюда
 	InlineKeyboardMarkup::Ptr typekeyboard(new InlineKeyboardMarkup);
-	vector<vector<string>> types{ {"Завтрак_t","Суп_t"},
+	std::vector<std::vector<std::string>> types{ {"Завтрак_t","Суп_t"},
 		{"Гарнир_t","Горячее_t"},
 		{"Салат_t","Напитки_t"},
 		{"Дессерты_t","Комплексный обед_t" } };
-	vector<vector<InlineKeyboardButton::Ptr>> type_row(4);
+	std::vector<std::vector<InlineKeyboardButton::Ptr>> type_row(4);
 	for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < 2; j++)
@@ -240,29 +279,29 @@ int main() {
 	//отработка команды start
 	bot.getEvents().onCommand("start", [&bot, &startkeyboard](Message::Ptr message) {
 		bot.getApi().sendMessage(message->chat->id, "Привет! Выбери свою роль:", false, 0, startkeyboard);
-		cout << "onCommand_start" << endl;
+
 		});
 	//обработка команды студент
 	bot.getEvents().onCallbackQuery([&bot, &startkeyboard, &studentkeyboard](CallbackQuery::Ptr query) {
 		if (StringTools::startsWith(query->data, "Студент")) {
-			string response = "Выбери столовую:";
+			std::string response = "Выбери столовую:";
 			bot.getApi().sendMessage(query->message->chat->id, response, false, 0, studentkeyboard, "Markdown");
-			cout << "Show menu?";
+
 		}
 		});
 
 	//обработка выбора роли
 	bot.getEvents().onCallbackQuery([&bot, &startkeyboard, &adminkeyboardB, &adminkeyboardG,&admkeyboard_B, &typekeyboard, &studentkeyboard, &types](CallbackQuery::Ptr query) {
 		//отработка команды админ
-		cout << "Obrabotka command admin" << endl;
+
 		if (StringTools::startsWith(query->data, "Администратор")) {
-			string response = "Введите, пожалуйста, пароль:";
+			std::string response = "Введите, пожалуйста, пароль:";
 			bot.getApi().sendMessage(query->message->chat->id, response, "Markdown");
 			bot.getEvents().onCommand("12345678B", [&bot, &admkeyboard_B, &adminkeyboardB, &typekeyboard, &types](Message::Ptr message)
 				{
 					printf("User wrote %s\n", message->text.c_str());
 
-					string response = "Вход выполнен! Выберите опцию:";
+					std::string response = "Вход выполнен! Выберите опцию:";
 					bot.getApi().sendMessage(message->chat->id, response, false, 0, adminkeyboardB, "Markdown");
 
 				}
@@ -271,7 +310,7 @@ int main() {
 				{
 					printf("User wrote %s\n", message->text.c_str());
 
-					string response = "Вход выполнен! Выберите опцию:";
+					std::string response = "Вход выполнен! Выберите опцию:";
 					bot.getApi().sendMessage(message->chat->id, response, false, 0, adminkeyboardG, "Markdown");
 
 				}
@@ -282,42 +321,42 @@ int main() {
 	bot.getEvents().onCallbackQuery([&bot, &adminkeyboardB, &adminkeyboardG,&admkeyboard_B, &admkeyboard_G,&typekeyboard, &types](CallbackQuery::Ptr query)
 		{
 			//обработка команды очистки текущего меню
-			cout << "obrabotka command clean" << endl;
+
 			if (StringTools::startsWith(query->data, "Очистить текущее меню_B")) {
 				sql = "UPDATE 'CANTEENB' SET Наличие = '0';";
 				rc = sqlite3_open("test.db", &db);
 				rc = sqlite3_exec(db, sql.c_str(), callback, 0, &zErrMsg);
-				string response = "Меню очищено!";
+				std::string response = "Меню очищено!";
 				bot.getApi().sendMessage(query->message->chat->id, response, false, 0, adminkeyboardB, "Markdown");
 			}
 			if (StringTools::startsWith(query->data, "Очистить текущее меню_G")) {
 				sql = "UPDATE 'CANTEENG' SET Наличие = '0';";
 				rc = sqlite3_open("test.db", &db);
 				rc = sqlite3_exec(db, sql.c_str(), callback, 0, &zErrMsg);
-				string response = "Меню очищено!";
+				std::string response = "Меню очищено!";
 				bot.getApi().sendMessage(query->message->chat->id, response, false, 0, adminkeyboardG, "Markdown");
 			}
 		});
 	bot.getEvents().onCallbackQuery([&bot, &adminkeyboardB,&adminkeyboardG,&admkeyboard_B,&admkeyboard_G, &typekeyboard, &types](CallbackQuery::Ptr query)
 		{
 			//Обработка команды добавления текущих блюд
-			cout << "obrabotka add new dish" << endl;
+
 			if (StringTools::startsWith(query->data, "Добавить блюдо_B")) {
-				string response = "Выбери блюдо:";
+				std::string response = "Выбери блюдо:";
 				bot.getApi().sendMessage(query->message->chat->id, response, false, 0, admkeyboard_B, "Markdown");
 			}
 			if (StringTools::startsWith(query->data, "Добавить блюдо_G")) {
-				string response = "Выберите блюдо:";
+				std::string response = "Выберите блюдо:";
 				bot.getApi().sendMessage(query->message->chat->id, response, false, 0, admkeyboard_G, "Markdown");
 			}
 		});
 	bot.getEvents().onCallbackQuery([&bot, &admkeyboard_B,&row_adm_B](CallbackQuery::Ptr query)
 		{
-			cout << "obrabotka cur dish" << endl;
+		
 			if (query->data.size() > 0 && query->data[0] == 'b')
 			{
 				std::regex regex1("_");
-				string s = query->data;
+				std::string s = query->data;
 				std::vector<std::string> out(
 					std::sregex_token_iterator(s.begin(), s.end(), regex1, -1),
 					std::sregex_token_iterator()
@@ -326,7 +365,7 @@ int main() {
 				sql = sql + out[1] + "';";
 				rc = sqlite3_open("test.db", &db);
 				rc = sqlite3_exec(db, sql.c_str(), callback, 0, &zErrMsg);
-				string response = "Блюдо добавлено!";
+				std::string response = "Блюдо добавлено!";
 				bot.getApi().sendMessage(query->message->chat->id, response, "Markdown");
 				admkeyboard_B->inlineKeyboard.clear();
 				adm_keyboard_B.clear();
@@ -339,9 +378,9 @@ int main() {
 					
 					InlineKeyboardButton::Ptr button_adm(new InlineKeyboardButton);
 
-					string s = adm_keyboard_B[i];
+					std::string s = adm_keyboard_B[i];
 					std::regex regex1("_");
-					std::vector<std::string> out(
+				std::vector<std::string> out(
 						std::sregex_token_iterator(s.begin(), s.end(), regex1, -1),
 						std::sregex_token_iterator()
 					);
@@ -358,11 +397,11 @@ int main() {
 	);
 	bot.getEvents().onCallbackQuery([&bot, &admkeyboard_G, &row_adm_G](CallbackQuery::Ptr query)
 		{
-			cout << "obrabotka cur dish" << endl;
+
 			if (query->data.size() > 0 && query->data[0] == 'g')
 			{
 				std::regex regex1("_");
-				string s = query->data;
+				std::string s = query->data;
 				std::vector<std::string> out(
 					std::sregex_token_iterator(s.begin(), s.end(), regex1, -1),
 					std::sregex_token_iterator()
@@ -371,7 +410,7 @@ int main() {
 				sql = sql + out[1] + "';";
 				rc = sqlite3_open("test.db", &db);
 				rc = sqlite3_exec(db, sql.c_str(), callback, 0, &zErrMsg);
-				string response = "Блюдо добавлено!";
+				std::string response = "Блюдо добавлено!";
 				bot.getApi().sendMessage(query->message->chat->id, response, "Markdown");
 				admkeyboard_G->inlineKeyboard.clear();
 				adm_keyboard_G.clear();
@@ -384,7 +423,7 @@ int main() {
 
 					InlineKeyboardButton::Ptr button_adm(new InlineKeyboardButton);
 
-					string s = adm_keyboard_G[i];
+					std::string s = adm_keyboard_G[i];
 					std::regex regex1("_");
 					std::vector<std::string> out(
 						std::sregex_token_iterator(s.begin(), s.end(), regex1, -1),
@@ -407,10 +446,10 @@ int main() {
 			//обработка команды добавления нового блюда
 			if (StringTools::startsWith(query->data, "Добавить новое блюдо_B")) {
 				auto cur_query = query->data;
-				string response = "Введите тип,название,цену блюда в формате 'тип,название,цена'";
+				std::string response = "Введите тип,название,цену блюда в формате 'тип,название,цена'";
 				bot.getApi().sendMessage(query->message->chat->id, response, "Markdown");
 				bot.getEvents().onNonCommandMessage([&bot, cur_query, &adminkeyboardB](Message::Ptr message) {
-					cout << message->text << endl;
+
 					std::string s = message->text;
 					std::regex regex1(",");
 
@@ -421,7 +460,7 @@ int main() {
 					);
 					if (out.size() < 3 || out.size() > 3)
 					{
-						std::string response = "Неверный формат";
+					std::string response = "Неверный формат";
 						bot.getApi().sendMessage(message->chat->id, response, "Markdown");
 					}
 					else {
@@ -436,10 +475,10 @@ int main() {
 			}
 			if (StringTools::startsWith(query->data, "Добавить новое блюдо_G")) {
 				auto cur_query = query->data;
-				string response = "Введите тип,название,цену блюда в формате 'тип,название,цена'";
+				std::string response = "Введите тип,название,цену блюда в формате 'тип,название,цена'";
 				bot.getApi().sendMessage(query->message->chat->id, response, "Markdown");
 				bot.getEvents().onNonCommandMessage([&bot, cur_query, &adminkeyboardG](Message::Ptr message) {
-					cout << message->text << endl;
+
 					std::string s = message->text;
 					std::regex regex1(",");
 
@@ -461,7 +500,7 @@ int main() {
 	//отработка команды CanteenB
 	bot.getEvents().onCallbackQuery([&bot, &studentkeyboard, &dishkeyboardB](CallbackQuery::Ptr query) {
 		if (StringTools::startsWith(query->data, "Canteen B")) {
-			string response = "Выберите тип:";
+			std::string response = "Выберите тип:";
 			bot.getApi().sendMessage(query->message->chat->id, response, false, 0, dishkeyboardB, "Markdown");
 			output = "";
 		}
@@ -469,7 +508,7 @@ int main() {
 	//отработка команды CanteenG
 	bot.getEvents().onCallbackQuery([&bot, &studentkeyboard, &dishkeyboardG](CallbackQuery::Ptr query) {
 		if (StringTools::startsWith(query->data, "Canteen G")) {
-			string response = "Выберите тип:";
+			std::string response = "Выберите тип:";
 			bot.getApi().sendMessage(query->message->chat->id, response, false, 0, dishkeyboardG, "Markdown");
 			output = "";
 		}
@@ -519,7 +558,7 @@ int main() {
 			{
 
 				sql = "SELECT Название,Цена FROM 'CANTEENG' WHERE Тип='" + out[0] + "' AND Наличие = 1;";
-				cout << sql;
+
 				rc = sqlite3_open("test.db", &db);
 				rc = sqlite3_exec(db, sql.c_str(), callback, 0, &zErrMsg);
 				if (output == "")
@@ -541,7 +580,7 @@ int main() {
 			longPoll.start();
 		}
 	}
-	catch (exception& e) {
+	catch (std::exception& e) {
 		printf("error: %s\n", e.what());
 	}
 
